@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import "@nuxt/ui";
+
+:root {
+  --ui-primary: var(--ui-color-primary-700);
+}
+
+.dark {
+  --ui-primary: var(--ui-color-primary-200);
+}
+
+@layer components {
+  .form-label {
+    @apply block text-sm font-semibold text-gray-700 mb-1;
+  }
+
+  .form-input {
+    @apply w-full rounded-lg border border-gray-300 px-4 py-2.5 bg-white
+    placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500
+    focus:border-transparent transition-all duration-150;
+  }
+}
