@@ -91,136 +91,115 @@ const pendientes = ref([
 </script>
 
 <template>
-  <div class="dashboard">
-    <!-- Header -->
-    <div class="header">
-      <div class="header-left">
-        <h1>SIGE-GIDU</h1>
-        <p>Municipalidad Provincial de Chopén</p>
-      </div>
-      <div class="header-right">
-        <div class="user-info">
-          <div class="user-avatar">
-            <i class="fas fa-user"></i>
+  <!-- Título del Dashboard -->
+  <div class="dashboard-title">
+    <h2>Dashboard SIGE-GIDU</h2>
+    <p>Resumen general del sistema</p>
+  </div>
+
+  <!-- Contenido Principal -->
+  <div class="main-content">
+    <!-- Columna Izquierda: Estadísticas y Áreas GIDU -->
+    <div class="left-column">
+      <!-- Estadísticas Rápidas -->
+      <div class="stats-cards">
+        <div class="stat-card">
+          <div class="stat-main">
+            <div class="stat-number">{{ stats.total.toLocaleString() }}</div>
+            <div class="stat-label">Total Documentos</div>
           </div>
-          <span>Usuario</span>
+          <div class="stat-trend positive">
+            <i class="fas fa-arrow-up"></i>
+            <span>12.5%</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-main">
+            <div class="stat-number">{{ stats.pendientes }}</div>
+            <div class="stat-label">Pendientes</div>
+          </div>
+          <div class="stat-trend negative">
+            <i class="fas fa-arrow-up"></i>
+            <span>5.2%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Áreas GIDU -->
+      <div class="section-card">
+        <div class="section-header">
+          <h3><i class="fas fa-building"></i> Áreas de GIDU</h3>
+        </div>
+        <div class="areas-grid">
+          <div
+            v-for="(area, index) in areasGIDU"
+            :key="index"
+            class="area-item"
+            :class="area.color"
+          >
+            <div class="area-icon">
+              <i :class="['fas', area.icono]"></i>
+            </div>
+            <div class="area-content">
+              <h4>{{ area.nombre }}</h4>
+              <p>{{ area.documentos }} documentos</p>
+            </div>
+            <div class="area-badge">
+              {{ Math.round((area.documentos / stats.total) * 100) }}%
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Título del Dashboard -->
-    <div class="dashboard-title">
-      <h2>Dashboard SIGE-GIDU</h2>
-      <p>Resumen general del sistema de gestión documental</p>
-    </div>
-
-    <!-- Contenido Principal -->
-    <div class="main-content">
-      <!-- Columna Izquierda: Estadísticas y Áreas GIDU -->
-      <div class="left-column">
-        <!-- Estadísticas Rápidas -->
-        <div class="stats-cards">
-          <div class="stat-card">
-            <div class="stat-main">
-              <div class="stat-number">{{ stats.total.toLocaleString() }}</div>
-              <div class="stat-label">Total Documentos</div>
-            </div>
-            <div class="stat-trend positive">
-              <i class="fas fa-arrow-up"></i>
-              <span>12.5%</span>
-            </div>
-          </div>
-
-          <div class="stat-card">
-            <div class="stat-main">
-              <div class="stat-number">{{ stats.pendientes }}</div>
-              <div class="stat-label">Pendientes</div>
-            </div>
-            <div class="stat-trend negative">
-              <i class="fas fa-arrow-up"></i>
-              <span>5.2%</span>
-            </div>
-          </div>
+    <!-- Columna Derecha: Áreas del Consejo y Pendientes -->
+    <div class="right-column">
+      <!-- Áreas del Consejo -->
+      <div class="section-card">
+        <div class="section-header">
+          <h3><i class="fas fa-landmark"></i> Áreas del Consejo</h3>
         </div>
-
-        <!-- Áreas GIDU -->
-        <div class="section-card">
-          <div class="section-header">
-            <h3><i class="fas fa-building"></i> Áreas de GIDU</h3>
-          </div>
-          <div class="areas-grid">
-            <div
-              v-for="(area, index) in areasGIDU"
-              :key="index"
-              class="area-item"
-              :class="area.color"
-            >
-              <div class="area-icon">
-                <i :class="['fas', area.icono]"></i>
-              </div>
-              <div class="area-content">
-                <h4>{{ area.nombre }}</h4>
-                <p>{{ area.documentos }} documentos</p>
-              </div>
-              <div class="area-badge">
-                {{ Math.round((area.documentos / stats.total) * 100) }}%
-              </div>
+        <div class="areas-grid">
+          <div
+            v-for="(area, index) in areasConsejo"
+            :key="index"
+            class="area-item"
+            :class="area.color"
+          >
+            <div class="area-icon">
+              <i :class="['fas', area.icono]"></i>
+            </div>
+            <div class="area-content">
+              <h4>{{ area.nombre }}</h4>
+              <p>{{ area.documentos }} documentos</p>
+            </div>
+            <div class="area-badge">
+              {{ Math.round((area.documentos / stats.total) * 100) }}%
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Columna Derecha: Áreas del Consejo y Pendientes -->
-      <div class="right-column">
-        <!-- Áreas del Consejo -->
-        <div class="section-card">
-          <div class="section-header">
-            <h3><i class="fas fa-landmark"></i> Áreas del Consejo</h3>
-          </div>
-          <div class="areas-grid">
-            <div
-              v-for="(area, index) in areasConsejo"
-              :key="index"
-              class="area-item"
-              :class="area.color"
-            >
-              <div class="area-icon">
-                <i :class="['fas', area.icono]"></i>
-              </div>
-              <div class="area-content">
-                <h4>{{ area.nombre }}</h4>
-                <p>{{ area.documentos }} documentos</p>
-              </div>
-              <div class="area-badge">
-                {{ Math.round((area.documentos / stats.total) * 100) }}%
-              </div>
-            </div>
-          </div>
+      <!-- Pendientes -->
+      <div class="section-card">
+        <div class="section-header">
+          <h3><i class="fas fa-clock"></i> Pendientes</h3>
         </div>
-
-        <!-- Pendientes -->
-        <div class="section-card">
-          <div class="section-header">
-            <h3><i class="fas fa-clock"></i> Pendientes</h3>
-          </div>
-          <div class="pendientes-list">
-            <div
-              v-for="(pendiente, index) in pendientes"
-              :key="index"
-              class="pendiente-item"
-            >
-              <div
-                class="pendiente-priority"
-                :class="pendiente.prioridad"
-              ></div>
-              <div class="pendiente-content">
-                <p>{{ pendiente.descripcion }}</p>
-                <span class="pendiente-date">{{ pendiente.fecha }}</span>
-              </div>
-              <button class="pendiente-action">
-                <i class="fas fa-ellipsis-v"></i>
-              </button>
+        <div class="pendientes-list">
+          <div
+            v-for="(pendiente, index) in pendientes"
+            :key="index"
+            class="pendiente-item"
+          >
+            <div class="pendiente-priority" :class="pendiente.prioridad"></div>
+            <div class="pendiente-content">
+              <p>{{ pendiente.descripcion }}</p>
+              <span class="pendiente-date">{{ pendiente.fecha }}</span>
             </div>
+            <button class="pendiente-action">
+              <i class="fas fa-ellipsis-v"></i>
+            </button>
           </div>
         </div>
       </div>
@@ -229,13 +208,6 @@ const pendientes = ref([
 </template>
 
 <style scoped>
-.dashboard {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-  padding: 20px;
-}
-
-/* Header */
 .header {
   display: flex;
   justify-content: space-between;
