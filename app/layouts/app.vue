@@ -1,44 +1,84 @@
-<script setup></script>
+<script setup lang="ts">
+import { BACKEND_URL } from "~/config/api";
+
+const userStore = useUseStore();
+const router = useRouter();
+
+onMounted(async () => {
+  userStore.changeUser("loading");
+  const token = localStorage.getItem("token");
+
+  if (token) {
+    const result = await fetch(`${BACKEND_URL}/auth/profile`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const data = await result.json();
+
+    userStore.changeUser({
+      token,
+      ...data,
+    });
+  } else {
+    userStore.changeUser(null);
+    router.push("/auth");
+  }
+});
+</script>
 
 <template>
-  <!-- HEADER -->
-  <header>
-    <div class="header-container">
-      <div class="logo">
-        <img src="/images/logo.jpg" alt="Logo GIDU" />
-        <div class="info">
-          <h1>SIGE-GIDU</h1>
-          <p>Municipalidad Provincial de Chepén</p>
+  <template v-if="userStore.user === 'loading'">
+    <p>Cangando...</p>
+  </template>
+
+  <template v-else-if="userStore.user === null">
+    <p>No ha iniciado sesión o su sesión expiró.</p>
+  </template>
+
+  <template v-else>
+    <!-- HEADER -->
+    <header>
+      <div class="header-container">
+        <div class="logo">
+          <img src="/images/logo.jpg" alt="Logo GIDU" />
+          <div class="info">
+            <h1>SIGE-GIDU</h1>
+            <p>Municipalidad Provincial de Chepén</p>
+          </div>
+        </div>
+
+        <nav>
+          <NuxtLink to="/">Inicio</NuxtLink>
+          <NuxtLink to="/expedientes">Expedientes</NuxtLink>
+          <NuxtLink to="/configuracion">Configuración</NuxtLink>
+        </nav>
+
+        <div class="user">
+          <img
+            src="https://ui-avatars.com/api/?name=U&background=0D8ABC&color=fff"
+            alt="user"
+          />
+          <div class="user-info">
+            <p class="user-info-name">{{ userStore.user.name }}</p>
+            <p class="user-info-role">{{ userStore.user.role }}</p>
+          </div>
         </div>
       </div>
+    </header>
 
-      <nav>
-        <NuxtLink to="/">Inicio</NuxtLink>
-        <NuxtLink to="/expedientes">Expedientes</NuxtLink>
-        <NuxtLink to="/configuracion">Configuración</NuxtLink>
-      </nav>
+    <!-- MAIN -->
+    <UMain>
+      <slot />
+    </UMain>
 
-      <div class="user">
-        <img
-          src="https://ui-avatars.com/api/?name=U&background=0D8ABC&color=fff"
-          alt="user"
-        />
-        <span>Usuario</span>
+    <!-- FOOTER -->
+    <UFooter>
+      <div class="footer-container">
+        <p>&copy; 2025 SIGE-GIDU. Todos los derechos reservados.</p>
       </div>
-    </div>
-  </header>
-
-  <!-- MAIN -->
-  <UMain>
-    <slot />
-  </UMain>
-
-  <!-- FOOTER -->
-  <UFooter>
-    <div class="footer-container">
-      <p>&copy; 2025 SIGE-GIDU. Todos los derechos reservados.</p>
-    </div>
-  </UFooter>
+    </UFooter>
+  </template>
 </template>
 
 <style scoped>
@@ -127,10 +167,24 @@ nav a:hover {
   border: 2px solid #0d8abc;
 }
 
-.user span {
+.user .user-info {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.user .user-info .user-info-name {
   font-size: 14px;
   color: #334155;
   font-weight: 500;
+  margin: 0;
+}
+
+.user .user-info .user-info-role {
+  font-size: 12px;
+  color: #334155;
+  margin: 0;
 }
 
 /* ===== MAIN ===== */

@@ -1,28 +1,9 @@
 <script setup lang="ts">
-// Tipos basados en tu schema
-interface User {
-  dni: string;
-  name: string;
-  password: string;
-  role: Role;
-  workArea?: WorkArea;
-}
+import { BACKEND_URL } from "~/config/api";
+import { useUseStore, type UserResponse } from "~/stores/user";
 
-interface Role {
-  id: number;
-  name: string;
-  permissions: Permission[];
-}
-
-interface WorkArea {
-  id: number;
-  name: string;
-}
-
-interface Permission {
-  id: number;
-  name: string;
-}
+const userStore = useUseStore();
+const router = useRouter();
 
 // Estados del formulario
 const isLogin = ref(true);
@@ -35,16 +16,6 @@ const form = ref({
   password: "",
   confirmPassword: "",
 });
-
-// Lista de áreas de trabajo (ejemplo)
-const workAreas = ref([
-  { id: 1, name: "Administración" },
-  { id: 2, name: "Recursos Humanos" },
-  { id: 3, name: "Finanzas" },
-  { id: 4, name: "Tecnología" },
-  { id: 5, name: "Jurídico" },
-  { id: 6, name: "Infraestructura" },
-]);
 
 // Validaciones
 const errors = ref({
@@ -107,11 +78,27 @@ const handleSubmit = async () => {
         password: form.value.password,
       });
 
-      // Simular delay de red
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      // "http://locahost:8000/auth/login"
+      const result = await fetch(`${BACKEND_URL}/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          dni: form.value.dni,
+          password: form.value.password,
+        }),
+      });
 
-      // Redirigir al dashboard después del login exitoso
-      console.log("Login exitoso - Redirigiendo al dashboard...");
+      const data = await result.json();
+
+      if (result.status === 200) {
+        userStore.changeUser(data as UserResponse);
+        localStorage.setItem("token", (data as UserResponse).token);
+        router.push("/");
+      } else {
+        alert(data.message || "Ocurrio un error");
+      }
     } else {
       // Lógica de registro
       console.log("Register attempt:", {
@@ -121,7 +108,23 @@ const handleSubmit = async () => {
       });
 
       // Simular delay de red
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      const result = await fetch(`${BACKEND_URL}/auth/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          dni: form.value.dni,
+          name: form.value.name,
+          password: form.value.password,
+        }),
+      });
+
+      if (result.status === 201) alert("Se creó tu cuenta");
+      else {
+        const data = await result.json();
+        alert(data.message || "Ocurrio un error");
+      }
 
       // Cambiar a login después del registro exitoso
       isLogin.value = true;
